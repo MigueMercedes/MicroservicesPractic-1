@@ -29,19 +29,27 @@ app.get("/api/:date?", (req, res) => {
   let unix = Date.parse(date);
   let utc = new Date(date).toUTCString();
 
-  if (isNaN(unix)) {
-    unix = date;
-  }
-
   if (utc === "Invalid Date") {
     utc = new Date(parseInt(date)).toUTCString();
   }
 
-  if (utc === "Invalid Date" || unix === "Invalid Date") {
-    res.json({ error: "Invalid Date" });
+  if (isNaN(unix)) {
+    unix = new Date(utc).getTime();
   }
 
-  res.json({ unix, utc });
+  if (!req.params.date) {
+    unix = new Date().getTime();
+    utc = new Date().toUTCString();
+  }
+
+  console.log({ unix, utc });
+
+  if (unix && utc) {
+    res.json({ unix, utc });
+    return;
+  }
+
+  res.json({ error: "Invalid Date" });
 });
 
 // listen for requests :)
